@@ -7,11 +7,25 @@ namespace AsciiChart.Sharp.TestApp
     {
         static void Main(string[] args)
         {
-            var series = new [] {1,5,3,4,5,4,3,2.5,2,1,0,-1 };
-            var output = AsciiChart.Plot(series);
+            var series = new double[100];
+            for (var i = 0; i < series.Length; i++)
+            {
+                series[i] = 15 * Math.Sin(i * ((Math.PI * 4) / series.Length));
+            }
             
             Console.OutputEncoding = Encoding.UTF8;
-            Console.Write(output);
+            Console.WriteLine(AsciiChart.Plot(series));
+
+            Console.WriteLine();
+
+            Console.WriteLine(AsciiChart.Plot(series, new Options
+            {
+                AxisLabelRightMargin = 0,
+                Height = 4,
+                Fill = '░',
+                AxisLabelWidth = 10,
+                AxisLabelFormat = "0,000.000"
+            }));
         }
     }
 }

@@ -6,6 +6,14 @@ namespace AsciiChart.Sharp
 {
     public static class AsciiChart
     {
+        const int NumberOfNonDataColumns = 2;
+
+        /// <summary>
+        /// Plot the series.
+        /// </summary>
+        /// <param name="series">The series to plot.</param>
+        /// <param name="options">The plot options.</param>
+        /// <returns>The ASCII Chart.</returns>
         public static string Plot(IEnumerable<double> series, Options options = null)
         {
             options = options ?? new Options();
@@ -15,70 +23,81 @@ namespace AsciiChart.Sharp
             var max = seriesList.Max();
 
             var range = Math.Abs(max - min);
-            var ratio = (options.Height ?? range) / range;
-            var min2 = Math.Round(min * ratio);
-            var max2 = Math.Round(max * ratio);
+            var ratio = ((options.Height) ?? range) / range;
+            var min2 = Math.Round(min * ratio, MidpointRounding.AwayFromZero);
+            var max2 = Math.Round(max * ratio, MidpointRounding.AwayFromZero);
             var rows = Math.Abs(max2 - min2);
-            var width = seriesList.Count + options.Offset;
+            
+            var columnIndexOfFirstDataPoint = options.AxisLabelRightMargin + NumberOfNonDataColumns;
+            var width = seriesList.Count + columnIndexOfFirstDataPoint;
 
-            var result = new string[((int)rows+1)][];
-            for (var i = 0; i <= rows; i++)
-            {
-                result[i] = new string[width];
-                for (var j = 0; j < width; j++)
-                {
-                    result[i][j] = " ";
-                }
-            }
+            var resultArray = CreateAndFill2dArray(rows, width, options.Fill.ToString());
 
             for (var y = min2; y <= max2; y++)
             {
-                var label = FormatAxisLabel(max - (y - min2) * range / rows, options); // bonus extra arg, y - min2
-                result[(int) (y - min2)][Math.Max(options.Offset - label.Length, 0)] = label;
-                result[(int) (y - min2)][options.Offset - 1] = (y == 0) ? "┼" : "┤";
+                var rowIndex = (int)(y - min2);
+                var rowLabel = max - rowIndex * range / rows;
+                var label = FormatAxisLabel(rowLabel, options); // bonus extra arg, y - min2
+                resultArray[rowIndex][Math.Max(columnIndexOfFirstDataPoint - label.Length, 0)] = label;
+                resultArray[rowIndex][columnIndexOfFirstDataPoint - 1] = (Math.Abs(rowLabel) < 0.001) ? "┼" : "┤";
             }
-
-            var y0 = Math.Round(seriesList[0] * ratio) - min2;
-            result[(int) (rows - y0)][options.Offset - 1] = "┼";
-
-
+            
             for (var x = 0; x < seriesList.Count - 1; x++)
             {
-                y0 = Math.Round(seriesList[x + 0] * ratio) - min2;
-                var y1 = Math.Round(seriesList[x + 1] * ratio) - min2;
-                if (y0 == y1)
+                var rowIndex0 = Math.Round(seriesList[x] * ratio, MidpointRounding.AwayFromZero) - min2;
+                var rowIndex1 = Math.Round(seriesList[x + 1] * ratio, MidpointRounding.AwayFromZero) - min2;
+
+                if (x == 0)
                 {
-                    result[(int) (rows - y0)][x + options.Offset] = "─";
+                    resultArray[(int) (rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
+                }
+
+                if (rowIndex0 == rowIndex1)
+                {
+                    resultArray[(int) (rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "─";
                 }
                 else
                 {
-                    result[(int) (rows - y1)][x + options.Offset] = (y0 > y1) ? "╰" : "╭";
-                    result[(int) (rows - y0)][x + options.Offset] = (y0 > y1) ? "╮" : "╯";
-                    var from = Math.Min(y0, y1);
-                    var to = Math.Max(y0, y1);
+                    resultArray[(int) (rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = (rowIndex0 > rowIndex1) ? "╰" : "╭";
+                    resultArray[(int) (rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = (rowIndex0 > rowIndex1) ? "╮" : "╯";
+                    var from = Math.Min(rowIndex0, rowIndex1);
+                    var to = Math.Max(rowIndex0, rowIndex1);
                     for (var y = from + 1; y < to; y++)
                     {
-                        result[(int) (rows - y)][x + options.Offset] = "│";
+                        resultArray[(int) (rows - y)][x + columnIndexOfFirstDataPoint] = "│";
                     }
                 }
             }
 
-            var rowStrings = result.Select(row => String.Join("", row));
+            return ToString(resultArray);
+        }
+
+        static string ToString(string[][] resultArray)
+        {
+            var rowStrings = resultArray.Select(row => String.Join("", row));
             return String.Join(Environment.NewLine, rowStrings);
+        }
+
+        static string[][] CreateAndFill2dArray(double rows, int width, string fill)
+        {
+            var array = new string[((int)rows+1)][];
+            for (var i = 0; i <= rows; i++)
+            {
+                array[i] = new string[width];
+                for (var j = 0; j < width; j++)
+                {
+                    array[i][j] = fill;
+                }
+            }
+
+            return array;
         }
 
         static string FormatAxisLabel(double d, Options options)
         {
-            var axisValue = Math.Round(d, 2).ToString();
+            var axisValue = Math.Round(d, 2).ToString(options.AxisLabelFormat);
 
-            return axisValue.PadLeft(options.Padding);
+            return axisValue.PadLeft(options.AxisLabelWidth);
         }
-    }
-
-    public class Options
-    {
-        public int Offset { get; set; } = 3;
-        public int Padding { get; set; } = 11; // todo offer non-whitespace padding
-        public int? Height { get; set; }
     }
 }
