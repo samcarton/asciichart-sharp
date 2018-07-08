@@ -3,28 +3,14 @@ C# port of asciichart (https://github.com/kroitor/asciichart)
 
 # Usage 
 ```c#
-static void Main(string[] args)
+var series = new double[100];
+for (var i = 0; i < series.Length; i++)
 {
-    var series = new double[100];
-    for (var i = 0; i < series.Length; i++)
-    {
-        series[i] = 15 * Math.Sin(i * ((Math.PI * 4) / series.Length));
-    }
-    
-    Console.OutputEncoding = Encoding.UTF8;
-    Console.WriteLine(AsciiChart.Plot(series));
-
-    Console.WriteLine();
-
-    Console.WriteLine(AsciiChart.Plot(series, new Options
-    {
-        AxisLabelRightMargin = 0,
-        Height = 4,
-        Fill = '░',
-        AxisLabelWidth = 10,
-        AxisLabelFormat = "0,000.000"
-    }));
+    series[i] = 15 * Math.Sin(i * ((Math.PI * 4) / series.Length));
 }
+                
+Console.OutputEncoding = Encoding.UTF8;
+Console.WriteLine(AsciiChart.Plot(series));
 ```
 
 ```
@@ -59,10 +45,26 @@ static void Main(string[] args)
 -12.97 ┤                                ╰╮       ╭╯                                       ╰╮       ╭╯
 -13.97 ┤                                 ╰─╮   ╭─╯                                         ╰─╮   ╭─╯
 -14.97 ┤                                   ╰───╯                                             ╰───╯
+```
+# Options Usage
 
- 0,014.970┤░░░░░░░░░░░╭─╮░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╭─╮░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
- 0,007.490┤░░╭────────╯░╰────────╮░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╭────────╯░╰────────╮░░░░░░░░░░░░░░░░░░░░░░░░░░░
- 0,000.000┼──╯░░░░░░░░░░░░░░░░░░░╰────╮░░░░░░░░░░░░░░░░░░░╭────╯░░░░░░░░░░░░░░░░░░░╰────╮░░░░░░░░░░░░░░░░░░░╭─░
--0,007.490┤░░░░░░░░░░░░░░░░░░░░░░░░░░░╰────────╮░╭────────╯░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╰────────╮╭─────────╯░░
--0,014.970┤░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╰─╯░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╰╯░░░░░░░░░░░░
+```C#
+// same series as above
+Console.WriteLine(AsciiChart.Plot(series, 
+    new Options
+    {
+        AxisLabelRightMargin = 0,
+        Height = 4,
+        Fill = '·',
+        AxisLabelWidth = 10,
+        AxisLabelFormat = "0,000.000"
+    }));
+```
+
+```
+ 0,014.970┤······╭───────────╮·····································╭───────────╮·······························
+ 0,007.485┤··╭───╯···········╰───╮·····························╭───╯···········╰───╮···························
+ 0,000.000┼──╯···················╰────╮···················╭────╯···················╰────╮···················╭─·
+-0,007.485┤···························╰───╮···········╭───╯·····························╰───╮···········╭───╯··
+-0,014.970┤·······························╰───────────╯·····································╰───────────╯······
 ```
