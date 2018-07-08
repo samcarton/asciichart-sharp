@@ -22,7 +22,7 @@ namespace AsciiChart.Sharp.TestApp
             {
                 AxisLabelRightMargin = 0,
                 Height = 4,
-                Fill = '░',
+                Fill = '·',
                 AxisLabelWidth = 10,
                 AxisLabelFormat = "0,000.000"
             }));

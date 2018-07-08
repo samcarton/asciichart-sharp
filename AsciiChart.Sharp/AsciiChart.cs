@@ -95,7 +95,7 @@ namespace AsciiChart.Sharp
 
         static string FormatAxisLabel(double d, Options options)
         {
-            var axisValue = Math.Round(d, 2).ToString(options.AxisLabelFormat);
+            var axisValue = d.ToString(options.AxisLabelFormat);
 
             return axisValue.PadLeft(options.AxisLabelWidth);
         }
