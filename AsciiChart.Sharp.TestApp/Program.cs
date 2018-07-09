@@ -20,12 +20,22 @@ namespace AsciiChart.Sharp.TestApp
 
             Console.WriteLine(AsciiChart.Plot(series, new Options
             {
+                AxisLabelLeftMargin = 3,
                 AxisLabelRightMargin = 0,
                 Height = 4,
                 Fill = '·',
-                AxisLabelWidth = 10,
-                AxisLabelFormat = "0,000.000"
+                AxisLabelFormat = "0,000.000",
             }));
+            
+            
+            var series2 = new double[100];
+            for (var i = 0; i < series.Length; i++)
+            {
+                series2[i] = (200000 * Math.Cos(i * ((Math.PI * 8) / series.Length))) + 1000000;
+            }
+            
+            Console.WriteLine();
+            Console.WriteLine(AsciiChart.Plot(series2, new Options{Height = 10}));
         }
     }
 }

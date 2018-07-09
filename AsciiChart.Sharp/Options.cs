@@ -4,7 +4,25 @@ namespace AsciiChart.Sharp
 {
     public class Options
     {
+        int _axisLabelLeftMargin = 1;
         int _axisLabelRightMargin = 1;
+
+
+        /// <summary>
+        /// The margin between the axis label and the left of the output.
+        /// </summary>
+        public int AxisLabelLeftMargin
+        {
+            get => _axisLabelLeftMargin;
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException("Margin must be >= 0");
+                }
+                _axisLabelLeftMargin = value;
+            }
+        }
 
         /// <summary>
         /// The margin between the axis label and the axis.
@@ -31,11 +49,6 @@ namespace AsciiChart.Sharp
         /// The background fill.
         /// </summary>
         public char Fill { get; set; } = ' ';
-
-        /// <summary>
-        /// The total width of the axis label. Label will be right-aligned.
-        /// </summary>
-        public int AxisLabelWidth { get; set; } = 6;
 
         /// <summary>
         /// The axis label format.
