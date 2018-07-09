@@ -33,14 +33,8 @@ namespace AsciiChart.Sharp
 
             var resultArray = CreateAndFill2dArray(rows, width, options.Fill.ToString());
 
-            for (var y = min2; y <= max2; y++)
-            {
-                var rowIndex = (int)(y - min2);
-                var rowLabel = max - rowIndex * range / rows;
-                var label = FormatAxisLabel(rowLabel, options); // bonus extra arg, y - min2
-                resultArray[rowIndex][Math.Max(columnIndexOfFirstDataPoint - label.Length, 0)] = label;
-                resultArray[rowIndex][columnIndexOfFirstDataPoint - 1] = (Math.Abs(rowLabel) < 0.001) ? "┼" : "┤";
-            }
+            var yAxisLabels = GetYAxisLabels(max, range, rows, options);
+            ApplyYAxisLabels(resultArray, yAxisLabels, columnIndexOfFirstDataPoint);
             
             for (var x = 0; x < seriesList.Count - 1; x++)
             {
@@ -72,12 +66,6 @@ namespace AsciiChart.Sharp
             return ToString(resultArray);
         }
 
-        static string ToString(string[][] resultArray)
-        {
-            var rowStrings = resultArray.Select(row => String.Join("", row));
-            return String.Join(Environment.NewLine, rowStrings);
-        }
-
         static string[][] CreateAndFill2dArray(double rows, int width, string fill)
         {
             var array = new string[((int)rows+1)][];
@@ -93,11 +81,60 @@ namespace AsciiChart.Sharp
             return array;
         }
 
-        static string FormatAxisLabel(double d, Options options)
+        static IReadOnlyList<AxisLabel> GetYAxisLabels(double max, double range, double rows, Options options)
         {
-            var axisValue = d.ToString(options.AxisLabelFormat);
+            var yAxisTicks = GetYAxisTicks(max, range, rows);
+            var labels = yAxisTicks.Select(tick => new AxisLabel(tick, options.AxisLabelFormat)).ToList();
 
-            return axisValue.PadLeft(options.AxisLabelWidth);
+            var maxLabelLength = labels.Max(label => label.Label.Length) + options.AxisLabelLeftMargin;
+            foreach (var label in labels)
+            {
+                label.LeftPad = maxLabelLength;
+            }
+
+            return labels;
+        }
+
+        static IReadOnlyList<double> GetYAxisTicks(double max, double range, double rows)
+        {
+            var numberOfTicks = rows + 1;
+            var yTicks = new List<double>();
+            for (var i = 0; i < numberOfTicks; i++)
+            {
+                yTicks.Add(max - i * range/rows);
+            }
+
+            return yTicks;
+        }
+
+        static void ApplyYAxisLabels(string[][] resultArray, IReadOnlyList<AxisLabel> yAxisLabels, int columnIndexOfFirstDataPoint)
+        {
+            for (var i = 0; i < yAxisLabels.Count; i++)
+            {
+                resultArray[i][0] = yAxisLabels[i].Label;
+                resultArray[i][columnIndexOfFirstDataPoint - 1] = (Math.Abs(yAxisLabels[i].Value) < 0.001) ? "┼" : "┤";
+            }
+        }
+
+        static string ToString(string[][] resultArray)
+        {
+            var rowStrings = resultArray.Select(row => String.Join("", row));
+            return String.Join(Environment.NewLine, rowStrings);
+        }
+
+        class AxisLabel
+        {
+            readonly string _format;
+
+            public AxisLabel(double value, string format)
+            {
+                _format = format;
+                Value = value;
+            }
+
+            public double Value { get; }
+            public int LeftPad { get; set; } = 0;
+            public string Label => Value.ToString(_format).PadLeft(LeftPad);
         }
     }
 }
