@@ -112,7 +112,7 @@ namespace AsciiChart.Sharp
             for (var i = 0; i < yAxisLabels.Count; i++)
             {
                 resultArray[i][0] = yAxisLabels[i].Label;
-                resultArray[i][columnIndexOfFirstDataPoint - 1] = (Math.Abs(yAxisLabels[i].Value) < 0.001) ? "┼" : "┤";
+                resultArray[i][columnIndexOfFirstDataPoint - 1] = "┤";
             }
         }
 
