@@ -20,6 +20,7 @@ namespace AsciiChart.Sharp.Tests
 
         private static object[][] Cases =
         {
+            new object[] { new double[] { 1 }, null, " 1.00 ┼ " },
             new object[] { new double[] { 1, 1, 1, 1, 1 }, null, " 1.00 ┼──── " },
             new object[] { new double[] { 0, 0, 0, 0, 0 }, null, " 0.00 ┼──── " },
             new object[]

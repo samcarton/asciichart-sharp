@@ -36,15 +36,12 @@ namespace AsciiChart.Sharp
             var yAxisLabels = GetYAxisLabels(max, range, rows, options);
             ApplyYAxisLabels(resultArray, yAxisLabels, columnIndexOfFirstDataPoint);
             
+            var rowIndex0 = Math.Round(seriesList[0] * ratio, MidpointRounding.AwayFromZero) - min2;
+            resultArray[(int) (rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
+
             for (var x = 0; x < seriesList.Count - 1; x++)
             {
-                var rowIndex0 = Math.Round(seriesList[x] * ratio, MidpointRounding.AwayFromZero) - min2;
                 var rowIndex1 = Math.Round(seriesList[x + 1] * ratio, MidpointRounding.AwayFromZero) - min2;
-
-                if (x == 0)
-                {
-                    resultArray[(int) (rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
-                }
 
                 if (rowIndex0 == rowIndex1)
                 {
@@ -60,6 +57,8 @@ namespace AsciiChart.Sharp
                     {
                         resultArray[(int) (rows - y)][x + columnIndexOfFirstDataPoint] = "│";
                     }
+
+                    rowIndex0 = rowIndex1;
                 }
             }
 
