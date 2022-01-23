@@ -23,7 +23,7 @@ namespace AsciiChart.Sharp
             var max = seriesList.Max();
 
             var range = Math.Abs(max - min);
-            var ratio = ((options.Height) ?? range) / range;
+            var ratio = range == 0 ? 0 : (options.Height ?? range) / range;
             var min2 = Math.Round(min * ratio, MidpointRounding.AwayFromZero);
             var max2 = Math.Round(max * ratio, MidpointRounding.AwayFromZero);
             var rows = Math.Abs(max2 - min2);
@@ -101,7 +101,7 @@ namespace AsciiChart.Sharp
             var yTicks = new List<double>();
             for (var i = 0; i < numberOfTicks; i++)
             {
-                yTicks.Add(max - i * range/rows);
+                yTicks.Add(max - i * (range == rows ? 1 : range/rows));
             }
 
             return yTicks;
@@ -112,7 +112,7 @@ namespace AsciiChart.Sharp
             for (var i = 0; i < yAxisLabels.Count; i++)
             {
                 resultArray[i][0] = yAxisLabels[i].Label;
-                resultArray[i][columnIndexOfFirstDataPoint - 1] = (Math.Abs(yAxisLabels[i].Value) < 0.001) ? "┼" : "┤";
+                resultArray[i][columnIndexOfFirstDataPoint - 1] = "┤";
             }
         }
 
