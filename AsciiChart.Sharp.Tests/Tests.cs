@@ -187,6 +187,31 @@ namespace AsciiChart.Sharp.Tests
  38.46 ┤                                                     ││ │││
  37.46 ┤                                                     ╰╯ │││
  36.45 ┤                                                        ╰╯╰ "
+            },
+            new object[] { new[] { 1, 1, double.NaN, 1, 1 }, null, @" 1.00 ┼─╴╶─ " },
+            new object[] { new[] { double.NaN, 1 }, null, @" 1.00 ┤╶ " },
+            new object[]
+            {
+                new[] { 0, 0, 1, 1, double.NaN, double.NaN, 3, 3, 4 }, null, @"
+ 4.00 ┤       ╭
+ 3.00 ┤     ╶─╯
+ 2.00 ┤
+ 1.00 ┤ ╭─╴
+ 0.00 ┼─╯       "
+            },
+            new object[]
+            {
+                new[] { 0.1, 0.2, 0.3, double.NaN, 0.5, 0.6, 0.7, double.NaN, double.NaN, 0.9, 1 }, new Options { Height = 9 }, @"
+ 1.00 ┤         ╭
+ 0.90 ┤        ╶╯
+ 0.80 ┤
+ 0.70 ┤     ╭╴
+ 0.60 ┤    ╭╯
+ 0.50 ┤   ╶╯
+ 0.40 ┤
+ 0.30 ┤ ╭╴
+ 0.20 ┤╭╯
+ 0.10 ┼╯          "
             }
         };
     }
