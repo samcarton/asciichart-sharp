@@ -7,7 +7,6 @@ namespace AsciiChart.Sharp
         int _axisLabelLeftMargin = 1;
         int _axisLabelRightMargin = 1;
 
-
         /// <summary>
         /// The margin between the axis label and the left of the output.
         /// </summary>
@@ -18,7 +17,7 @@ namespace AsciiChart.Sharp
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("Margin must be >= 0");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Margin must be >= 0");
                 }
                 _axisLabelLeftMargin = value;
             }
@@ -34,12 +33,12 @@ namespace AsciiChart.Sharp
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("Margin must be >= 0");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Margin must be >= 0");
                 }
                 _axisLabelRightMargin = value;
             }
         }
-        
+
         /// <summary>
         /// Roughly the number of lines to scale the output to.
         /// </summary>

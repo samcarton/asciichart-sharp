@@ -27,7 +27,7 @@ namespace AsciiChart.Sharp
             var min2 = Math.Round(min * ratio, MidpointRounding.AwayFromZero);
             var max2 = Math.Round(max * ratio, MidpointRounding.AwayFromZero);
             var rows = Math.Abs(max2 - min2);
-            
+
             var columnIndexOfFirstDataPoint = options.AxisLabelRightMargin + NumberOfNonDataColumns;
             var width = seriesList.Count + columnIndexOfFirstDataPoint;
 
@@ -35,11 +35,11 @@ namespace AsciiChart.Sharp
 
             var yAxisLabels = GetYAxisLabels(max, range, rows, options);
             ApplyYAxisLabels(resultArray, yAxisLabels, columnIndexOfFirstDataPoint);
-            
+
             var rowIndex0 = Math.Round(seriesList[0] * ratio, MidpointRounding.AwayFromZero) - min2;
             if (!double.IsNaN(rowIndex0))
             {
-                resultArray[(int) (rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
+                resultArray[(int)(rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
             }
 
             for (var x = 0; x < seriesList.Count - 1; x++)
@@ -52,25 +52,25 @@ namespace AsciiChart.Sharp
 
                 if (double.IsNaN(rowIndex0))
                 {
-                    resultArray[(int) (rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = "╶";
+                    resultArray[(int)(rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = "╶";
                 }
                 else if (double.IsNaN(rowIndex1))
                 {
-                    resultArray[(int) (rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "╴";
+                    resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "╴";
                 }
                 else if (rowIndex0 == rowIndex1)
                 {
-                    resultArray[(int) (rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "─";
+                    resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "─";
                 }
                 else
                 {
-                    resultArray[(int) (rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = (rowIndex0 > rowIndex1) ? "╰" : "╭";
-                    resultArray[(int) (rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = (rowIndex0 > rowIndex1) ? "╮" : "╯";
+                    resultArray[(int)(rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = rowIndex0 > rowIndex1 ? "╰" : "╭";
+                    resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = rowIndex0 > rowIndex1 ? "╮" : "╯";
                     var from = Math.Min(rowIndex0, rowIndex1);
                     var to = Math.Max(rowIndex0, rowIndex1);
                     for (var y = from + 1; y < to; y++)
                     {
-                        resultArray[(int) (rows - y)][x + columnIndexOfFirstDataPoint] = "│";
+                        resultArray[(int)(rows - y)][x + columnIndexOfFirstDataPoint] = "│";
                     }
                 }
 
@@ -82,7 +82,7 @@ namespace AsciiChart.Sharp
 
         static string[][] CreateAndFill2dArray(double rows, int width, string fill)
         {
-            var array = new string[((int)rows+1)][];
+            var array = new string[(int)rows + 1][];
             for (var i = 0; i <= rows; i++)
             {
                 array[i] = new string[width];
@@ -109,7 +109,7 @@ namespace AsciiChart.Sharp
             return labels;
         }
 
-        static IReadOnlyList<double> GetYAxisTicks(double max, double range, double rows)
+        static IEnumerable<double> GetYAxisTicks(double max, double range, double rows)
         {
             var numberOfTicks = rows + 1;
             var yTicks = new List<double>();
@@ -121,7 +121,7 @@ namespace AsciiChart.Sharp
             return yTicks;
         }
 
-        static void ApplyYAxisLabels(string[][] resultArray, IReadOnlyList<AxisLabel> yAxisLabels, int columnIndexOfFirstDataPoint)
+        static void ApplyYAxisLabels(IReadOnlyList<string[]> resultArray, IReadOnlyList<AxisLabel> yAxisLabels, int columnIndexOfFirstDataPoint)
         {
             for (var i = 0; i < yAxisLabels.Count; i++)
             {
@@ -130,10 +130,10 @@ namespace AsciiChart.Sharp
             }
         }
 
-        static string ToString(string[][] resultArray)
+        static string ToString(IReadOnlyList<string[]> resultArray)
         {
-            var rowStrings = resultArray.Select(row => String.Join("", row));
-            return String.Join(Environment.NewLine, rowStrings);
+            var rowStrings = resultArray.Select(row => string.Join("", row));
+            return string.Join(Environment.NewLine, rowStrings);
         }
 
         class AxisLabel
@@ -147,7 +147,7 @@ namespace AsciiChart.Sharp
             }
 
             public double Value { get; }
-            public int LeftPad { get; set; } = 0;
+            public int LeftPad { get; set; }
             public string Label => Value.ToString(_format).PadLeft(LeftPad);
         }
     }

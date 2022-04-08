@@ -6,7 +6,7 @@ namespace AsciiChart.Sharp.Tests
 {
     public class Tests
     {
-        private static readonly Regex _normalize = new Regex(@" *(\r\n|\n\r|\n|\r)", RegexOptions.Compiled);
+        static readonly Regex _normalize = new Regex(@" *(\r\n|\n\r|\n|\r)", RegexOptions.Compiled);
 
         [Test]
         [TestCaseSource(nameof(Cases))]
@@ -16,9 +16,9 @@ namespace AsciiChart.Sharp.Tests
             Assert.AreEqual(Normalize(expected), Normalize(actual));
         }
 
-        private static string Normalize(string text) => _normalize.Replace(text.Trim('\r', '\n') + Environment.NewLine, Environment.NewLine);
+        static string Normalize(string text) => _normalize.Replace(text.Trim('\r', '\n') + Environment.NewLine, Environment.NewLine);
 
-        private static object[][] Cases =
+        static object[][] Cases =
         {
             new object[] { new double[] { 1 }, null, " 1.00 ┼ " },
             new object[] { new double[] { 1, 1, 1, 1, 1 }, null, " 1.00 ┼──── " },
@@ -39,7 +39,7 @@ namespace AsciiChart.Sharp.Tests
   1.00 ┤╰─╯││    ╰
   0.00 ┤   ││
  -1.00 ┤   ││
- -2.00 ┤   ╰╯      "
+ -2.00 ┤   ╰╯"
             },
             new object[]
             {
@@ -57,7 +57,7 @@ namespace AsciiChart.Sharp.Tests
   1.00 ┤╰─╯││         ││╰╯
   0.00 ┤   ││         ╰╯
  -1.00 ┤   ││
- -2.00 ┤   ╰╯                 "
+ -2.00 ┤   ╰╯"
             },
             new object[]
             {
@@ -65,7 +65,7 @@ namespace AsciiChart.Sharp.Tests
   2.00 ┤  ╭╮
   1.03 ┤  ││╭─╮╭╮╭
   0.07 ┼──╯││ ╰╯╰╯
- -0.90 ┤   ╰╯      "
+ -0.90 ┤   ╰╯"
             },
             new object[]
             {
@@ -74,7 +74,7 @@ namespace AsciiChart.Sharp.Tests
   7.75 ┤    ╭─╯│╭╮
   4.50 ┼╮ ╭╮│  ╰╯│
   1.25 ┤╰─╯││    ╰
- -2.00 ┤   ╰╯      "
+ -2.00 ┤   ╰╯"
             },
             new object[]
             {
@@ -87,7 +87,7 @@ namespace AsciiChart.Sharp.Tests
  0.44 ┼╮││ │ │╭╯
  0.34 ┤│││ │ ││
  0.24 ┤││╰─╯ ╰╯
- 0.14 ┤╰╯         "
+ 0.14 ┤╰╯"
             },
             new object[]
             {
@@ -99,7 +99,7 @@ namespace AsciiChart.Sharp.Tests
  0.006 ┤│  │││
  0.005 ┤│  │││
  0.004 ┤╰╮╭╯││
- 0.003 ┤ ╰╯ ╰╯ "
+ 0.003 ┤ ╰╯ ╰╯"
             },
             new object[]
             {
@@ -114,7 +114,7 @@ namespace AsciiChart.Sharp.Tests
   428 ┤╭╮╭╮╭╯││ │
   245 ┼╯╰╯││ ╰╯ ╰
    61 ┤   ││
- -122 ┤   ╰╯      "
+ -122 ┤   ╰╯"
             },
             new object[]
             {
@@ -136,7 +136,7 @@ namespace AsciiChart.Sharp.Tests
   0.90    ┤   ╭╮  ││  ╭╯╰╮       ╭╮  ││  ╭╯╰╮       ╭╮  ││  ╭╯╰╮
  -0.40    ┼───╯╰──╯│╭─╯  ╰───────╯╰──╯│╭─╯  ╰───────╯╰──╯│╭─╯  ╰───
  -1.70    ┤        ││                 ││                 ││
- -3.00    ┤        ╰╯                 ╰╯                 ╰╯         "
+ -3.00    ┤        ╰╯                 ╰╯                 ╰╯"
             },
             new object[]
             {
@@ -150,7 +150,7 @@ namespace AsciiChart.Sharp.Tests
  -6.00 ┤     ╰╮ │││  ││
  -7.00 ┤      ╰╮│││  ││
  -8.00 ┤       ╰╯││  ││
- -9.00 ┤         ╰╯  ╰╯  "
+ -9.00 ┤         ╰╯  ╰╯"
             },
             new object[]
             {
@@ -186,7 +186,7 @@ namespace AsciiChart.Sharp.Tests
  39.47 ┤                                                    ╰╮│ │╭╮
  38.46 ┤                                                     ││ │││
  37.46 ┤                                                     ╰╯ │││
- 36.45 ┤                                                        ╰╯╰ "
+ 36.45 ┤                                                        ╰╯╰"
             },
             new object[] { new[] { 1, 1, double.NaN, 1, 1 }, null, @" 1.00 ┼─╴╶─ " },
             new object[] { new[] { double.NaN, 1 }, null, @" 1.00 ┤╶ " },
@@ -197,7 +197,7 @@ namespace AsciiChart.Sharp.Tests
  3.00 ┤     ╶─╯
  2.00 ┤
  1.00 ┤ ╭─╴
- 0.00 ┼─╯       "
+ 0.00 ┼─╯"
             },
             new object[]
             {
@@ -211,7 +211,7 @@ namespace AsciiChart.Sharp.Tests
  0.40 ┤
  0.30 ┤ ╭╴
  0.20 ┤╭╯
- 0.10 ┼╯          "
+ 0.10 ┼╯"
             }
         };
     }
