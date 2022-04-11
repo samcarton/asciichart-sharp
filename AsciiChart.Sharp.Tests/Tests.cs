@@ -16,8 +16,6 @@ namespace AsciiChart.Sharp.Tests
             Assert.AreEqual(Normalize(expected), Normalize(actual));
         }
 
-        static string Normalize(string text) => _normalize.Replace(text.Trim('\r', '\n') + Environment.NewLine, Environment.NewLine);
-
         static object[][] Cases =
         {
             new object[] { new double[] { 1 }, null, " 1.00 ┼ " },
@@ -214,5 +212,37 @@ namespace AsciiChart.Sharp.Tests
  0.10 ┼╯"
             }
         };
+
+        [Test]
+        [TestCaseSource(nameof(MultiCases))]
+        public void TestPlotMulti(double[][] series, Options opts, string expected)
+        {
+            var actual = AsciiChart.Plot(series, opts);
+            Assert.AreEqual(Normalize(expected), Normalize(actual));
+        }
+
+        static object[][] MultiCases =
+        {
+            new object[]
+            {
+                new[] { new double[] { 0 }, new double[] { 1 }, new double[] { 2 } }, null, @"
+ 2.00 ┼
+ 1.00 ┼
+ 0.00 ┼"
+            },
+            new object[]
+            {
+                new[] { new[] { 0, 0, 2, 2, double.NaN }, new double[] { 1, 1, 1, 1, 1, 1, 1 }, new[] { double.NaN, double.NaN, double.NaN, 0, 0, 2, 2 } }, null, @"
+ 2.00 ┤ ╭─╴╭─
+ 1.00 ┼────│─
+ 0.00 ┼─╯╶─╯"
+            },
+            new object[]
+            {
+                new[] { new double[] { 0, 0, 0 }, new[] { double.NaN, 0, 0 }, new[] { double.NaN, double.NaN, 0 } }, null, " 0.00 ┼╶╶ "
+            }
+        };
+
+        static string Normalize(string text) => _normalize.Replace(text.Trim('\r', '\n') + Environment.NewLine, Environment.NewLine);
     }
 }

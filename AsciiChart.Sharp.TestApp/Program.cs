@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace AsciiChart.Sharp.TestApp
@@ -35,6 +36,13 @@ namespace AsciiChart.Sharp.TestApp
 
             Console.WriteLine();
             Console.WriteLine(AsciiChart.Plot(series2, new Options{Height = 10}));
+
+            Console.WriteLine();
+            Console.WriteLine(AsciiChart.Plot(
+                Enumerable.Range(0, 6)
+                    .Select(i => Enumerable.Range(-40, 81).Select(x => Math.Abs(x) > 40 - i ? double.NaN : Math.Sqrt((40 - i) * (40 - i) - x * x) / 2))
+                    .ToList(),
+                new Options { AxisLabelFormat = "0" }));
         }
     }
 }

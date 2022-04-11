@@ -16,11 +16,16 @@ namespace AsciiChart.Sharp
         /// <returns>The ASCII Chart.</returns>
         public static string Plot(IEnumerable<double> series, Options options = null)
         {
+            return Plot(new[] { series }, options);
+        }
+
+        public static string Plot(IEnumerable<IEnumerable<double>> data, Options options = null)
+        {
             options = options ?? new Options();
 
-            var seriesList = series.ToList();
-            var min = seriesList.Where(v => !double.IsNaN(v)).Min();
-            var max = seriesList.Max();
+            var dataList = data.ToList();
+            var min = dataList.SelectMany(s => s).Where(v => !double.IsNaN(v)).Min();
+            var max = dataList.SelectMany(s => s).Max();
 
             var range = Math.Abs(max - min);
             var ratio = range == 0 ? 0 : (options.Height ?? range) / range;
@@ -29,52 +34,56 @@ namespace AsciiChart.Sharp
             var rows = Math.Abs(max2 - min2);
 
             var columnIndexOfFirstDataPoint = options.AxisLabelRightMargin + NumberOfNonDataColumns;
-            var width = seriesList.Count + columnIndexOfFirstDataPoint;
+            var width = dataList.Max(s => s.Count()) + columnIndexOfFirstDataPoint;
 
             var resultArray = CreateAndFill2dArray(rows, width, options.Fill.ToString());
 
             var yAxisLabels = GetYAxisLabels(max, range, rows, options);
             ApplyYAxisLabels(resultArray, yAxisLabels, columnIndexOfFirstDataPoint);
 
-            var rowIndex0 = Math.Round(seriesList[0] * ratio, MidpointRounding.AwayFromZero) - min2;
-            if (!double.IsNaN(rowIndex0))
+            foreach (var series in dataList)
             {
-                resultArray[(int)(rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
-            }
-
-            for (var x = 0; x < seriesList.Count - 1; x++)
-            {
-                var rowIndex1 = Math.Round(seriesList[x + 1] * ratio, MidpointRounding.AwayFromZero) - min2;
-                if (double.IsNaN(rowIndex0) && double.IsNaN(rowIndex1))
+                var seriesList = series.ToList();
+                var rowIndex0 = Math.Round(seriesList[0] * ratio, MidpointRounding.AwayFromZero) - min2;
+                if (!double.IsNaN(rowIndex0))
                 {
-                    continue;
+                    resultArray[(int)(rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
                 }
 
-                if (double.IsNaN(rowIndex0))
+                for (var x = 0; x < seriesList.Count - 1; x++)
                 {
-                    resultArray[(int)(rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = "╶";
-                }
-                else if (double.IsNaN(rowIndex1))
-                {
-                    resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "╴";
-                }
-                else if (rowIndex0 == rowIndex1)
-                {
-                    resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "─";
-                }
-                else
-                {
-                    resultArray[(int)(rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = rowIndex0 > rowIndex1 ? "╰" : "╭";
-                    resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = rowIndex0 > rowIndex1 ? "╮" : "╯";
-                    var from = Math.Min(rowIndex0, rowIndex1);
-                    var to = Math.Max(rowIndex0, rowIndex1);
-                    for (var y = from + 1; y < to; y++)
+                    var rowIndex1 = Math.Round(seriesList[x + 1] * ratio, MidpointRounding.AwayFromZero) - min2;
+                    if (double.IsNaN(rowIndex0) && double.IsNaN(rowIndex1))
                     {
-                        resultArray[(int)(rows - y)][x + columnIndexOfFirstDataPoint] = "│";
+                        continue;
                     }
-                }
 
-                rowIndex0 = rowIndex1;
+                    if (double.IsNaN(rowIndex0))
+                    {
+                        resultArray[(int)(rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = "╶";
+                    }
+                    else if (double.IsNaN(rowIndex1))
+                    {
+                        resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "╴";
+                    }
+                    else if (rowIndex0 == rowIndex1)
+                    {
+                        resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = "─";
+                    }
+                    else
+                    {
+                        resultArray[(int)(rows - rowIndex1)][x + columnIndexOfFirstDataPoint] = rowIndex0 > rowIndex1 ? "╰" : "╭";
+                        resultArray[(int)(rows - rowIndex0)][x + columnIndexOfFirstDataPoint] = rowIndex0 > rowIndex1 ? "╮" : "╯";
+                        var from = Math.Min(rowIndex0, rowIndex1);
+                        var to = Math.Max(rowIndex0, rowIndex1);
+                        for (var y = from + 1; y < to; y++)
+                        {
+                            resultArray[(int)(rows - y)][x + columnIndexOfFirstDataPoint] = "│";
+                        }
+                    }
+
+                    rowIndex0 = rowIndex1;
+                }
             }
 
             return ToString(resultArray);
