@@ -53,5 +53,20 @@ namespace AsciiChart.Sharp
         /// The axis label format.
         /// </summary>
         public string AxisLabelFormat { get; set; } = "0.00";
+
+        /// <summary>
+        /// The axis color.
+        /// </summary>
+        public AnsiColor AxisColor { get; set; }
+
+        /// <summary>
+        /// The axis label color.
+        /// </summary>
+        public AnsiColor LabelColor { get; set; }
+
+        /// <summary>
+        /// The color of each series.
+        /// </summary>
+        public AnsiColor[] SeriesColors { get; set; }
     }
 }

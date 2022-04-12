@@ -39,10 +39,20 @@ namespace AsciiChart.Sharp.TestApp
 
             Console.WriteLine();
             Console.WriteLine(AsciiChart.Plot(
-                Enumerable.Range(0, 6)
-                    .Select(i => Enumerable.Range(-40, 81).Select(x => Math.Abs(x) > 40 - i ? double.NaN : Math.Sqrt((40 - i) * (40 - i) - x * x) / 2))
-                    .ToList(),
-                new Options { AxisLabelFormat = "0" }));
+                Enumerable.Range(0, 6).Select(i => Enumerable.Range(-40, 81).Select(x => Math.Abs(x) > 40 - i ? double.NaN : Math.Sqrt((40 - i) * (40 - i) - x * x) / 2)),
+                new Options
+                {
+                    AxisLabelFormat = "0",
+                    SeriesColors = new[]
+                    {
+                        AnsiColor.Red,
+                        AnsiColor.Orange,
+                        AnsiColor.Yellow,
+                        AnsiColor.Green,
+                        AnsiColor.Blue,
+                        AnsiColor.Purple,
+                    }
+                }));
         }
     }
 }

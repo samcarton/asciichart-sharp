@@ -210,7 +210,11 @@ namespace AsciiChart.Sharp.Tests
  0.30 ┤ ╭╴
  0.20 ┤╭╯
  0.10 ┼╯"
-            }
+            },
+            new object[]
+            {
+                new[] { double.NaN, 1 }, new Options { AxisColor = AnsiColor.Green, LabelColor = AnsiColor.Red }, "\x1b[91m 1.00\x1b[0m \x1b[32m┤\x1b[0m╶ "
+            },
         };
 
         [Test]
@@ -240,9 +244,24 @@ namespace AsciiChart.Sharp.Tests
             new object[]
             {
                 new[] { new double[] { 0, 0, 0 }, new[] { double.NaN, 0, 0 }, new[] { double.NaN, double.NaN, 0 } }, null, " 0.00 ┼╶╶ "
+            },
+            new object[]
+            {
+                new[] { new double[] { 0, 0 }, new[] { double.NaN, 0 } }, new Options { SeriesColors = new[] { AnsiColor.Red } }, " 0.00 \x1b[91m┼\x1b[0m╶ "
+            },
+            new object[]
+            {
+                new[] { new double[] { 0, 0 }, new[] { double.NaN, 0 } }, new Options { SeriesColors = new[] { AnsiColor.Default, AnsiColor.Red } }, " 0.00 ┼\x1b[91m╶\x1b[0m "
+            },
+            new object[]
+            {
+                new[] { new[] { double.NaN, 0, 2 }, new double[] { 0, 2 } }, new Options { SeriesColors = new[] { AnsiColor.Red, AnsiColor.Red } }, @"
+ 2.00 ┤\x1b[91m╭╭\x1b[0m
+ 1.00 ┤\x1b[91m││\x1b[0m
+ 0.00 \x1b[91m┼╯╯\x1b[0m"
             }
         };
 
-        static string Normalize(string text) => _normalize.Replace(text.Trim('\r', '\n') + Environment.NewLine, Environment.NewLine);
+        static string Normalize(string text) => _normalize.Replace(text.Trim('\r', '\n') + Environment.NewLine, Environment.NewLine).Replace(@"\x1b", "\x1b");
     }
 }

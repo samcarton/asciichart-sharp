@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace AsciiChart.Sharp
 {
@@ -37,17 +38,22 @@ namespace AsciiChart.Sharp
             var width = dataList.Max(s => s.Count()) + columnIndexOfFirstDataPoint;
 
             var resultArray = CreateAndFill2dArray(rows, width, options.Fill.ToString());
+            var colorArray = Enumerable.Repeat(Enumerable.Repeat(AnsiColor.Default, width), (int)rows + 1).Select(row => row.ToArray()).ToArray();
 
             var yAxisLabels = GetYAxisLabels(max, range, rows, options);
-            ApplyYAxisLabels(resultArray, yAxisLabels, columnIndexOfFirstDataPoint);
+            ApplyYAxisLabels(resultArray, colorArray, yAxisLabels, columnIndexOfFirstDataPoint, options);
 
+            var i = 0;
             foreach (var series in dataList)
             {
+                var color = options.SeriesColors?.Length > i ? options.SeriesColors[i++] : AnsiColor.Default;
+
                 var seriesList = series.ToList();
                 var rowIndex0 = Math.Round(seriesList[0] * ratio, MidpointRounding.AwayFromZero) - min2;
                 if (!double.IsNaN(rowIndex0))
                 {
                     resultArray[(int)(rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = "┼";
+                    colorArray[(int)(rows - rowIndex0)][columnIndexOfFirstDataPoint - 1] = color;
                 }
 
                 for (var x = 0; x < seriesList.Count - 1; x++)
@@ -82,11 +88,25 @@ namespace AsciiChart.Sharp
                         }
                     }
 
+                    var lower = double.IsNaN(rowIndex0) ? rowIndex1 : rowIndex0;
+                    var upper = double.IsNaN(rowIndex1) ? rowIndex0 : rowIndex1;
+                    if (lower > upper)
+                    {
+                        var tmp = lower;
+                        lower = upper;
+                        upper = tmp;
+                    }
+
+                    for (var y = lower; y <= upper; y++)
+                    {
+                        colorArray[(int)(rows - y)][x + columnIndexOfFirstDataPoint] = color;
+                    }
+
                     rowIndex0 = rowIndex1;
                 }
             }
 
-            return ToString(resultArray);
+            return ToString(resultArray, colorArray);
         }
 
         static string[][] CreateAndFill2dArray(double rows, int width, string fill)
@@ -130,19 +150,70 @@ namespace AsciiChart.Sharp
             return yTicks;
         }
 
-        static void ApplyYAxisLabels(IReadOnlyList<string[]> resultArray, IReadOnlyList<AxisLabel> yAxisLabels, int columnIndexOfFirstDataPoint)
+        static void ApplyYAxisLabels(IReadOnlyList<string[]> resultArray, IReadOnlyList<AnsiColor[]> colorArray, IReadOnlyList<AxisLabel> yAxisLabels, int columnIndexOfFirstDataPoint, Options options)
         {
             for (var i = 0; i < yAxisLabels.Count; i++)
             {
                 resultArray[i][0] = yAxisLabels[i].Label;
+                colorArray[i][0] = options.LabelColor;
                 resultArray[i][columnIndexOfFirstDataPoint - 1] = "┤";
+                colorArray[i][columnIndexOfFirstDataPoint - 1] = options.AxisColor;
             }
         }
 
-        static string ToString(IReadOnlyList<string[]> resultArray)
+        static string ToString(IReadOnlyList<string[]> resultArray, IReadOnlyList<AnsiColor[]> colorArray)
         {
-            var rowStrings = resultArray.Select(row => string.Join("", row));
-            return string.Join(Environment.NewLine, rowStrings);
+            var builder = new StringBuilder();
+            for (var y = 0; y < resultArray.Count; y++)
+            {
+                var prev = AnsiColor.Default;
+                for (var x = 0; x < resultArray[y].Length; x++)
+                {
+                    var color = colorArray[y][x];
+                    if (color != prev)
+                    {
+                        builder.Append(ColorString(color));
+                        prev = color;
+                    }
+
+                    builder.Append(resultArray[y][x]);
+                }
+
+                if (y < resultArray.Count - 1)
+                {
+                    builder.Append(Environment.NewLine);
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        static string ColorString(AnsiColor color)
+        {
+            if (color == AnsiColor.Default)
+            {
+                return "\x1b[0m";
+            }
+
+            if (color == AnsiColor.Black)
+            {
+                color = AnsiColor.Default;
+            }
+
+            if (color <= AnsiColor.Silver)
+            {
+                // 3-bit color
+                return $"\x1b[{30 + (byte)color}m";
+            }
+
+            if (color <= AnsiColor.White)
+            {
+                // 4-bit color
+                return ($"\x1b[{82 + (byte)color}m");
+            }
+
+            // 8-bit color
+            return ($"\x1b[38;5;{(byte)color}m");
         }
 
         class AxisLabel
