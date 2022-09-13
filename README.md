@@ -1,14 +1,14 @@
 # asciichart-sharp
 C# port of asciichart (https://github.com/kroitor/asciichart)
 
-# Usage 
+# Usage
 ```c#
 var series = new double[100];
 for (var i = 0; i < series.Length; i++)
 {
     series[i] = 15 * Math.Sin(i * ((Math.PI * 4) / series.Length));
 }
-                
+
 Console.OutputEncoding = Encoding.UTF8;
 Console.WriteLine(AsciiChart.Plot(series));
 ```
@@ -46,8 +46,8 @@ Console.WriteLine(AsciiChart.Plot(series));
 -13.97 ┤                                 ╰─╮   ╭─╯                                         ╰─╮   ╭─╯
 -14.97 ┤                                   ╰───╯                                             ╰───╯
 ```
-# Options Usage
 
+# Options Usage
 ```C#
 // same series as above
 Console.WriteLine(AsciiChart.Plot(series, new Options
@@ -69,7 +69,6 @@ Console.WriteLine(AsciiChart.Plot(series, new Options
 ```
 
 # Auto Label Width
-
 Automatically sizes to fit the largest visible label.
 
 ```C#
