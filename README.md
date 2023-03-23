@@ -1,3 +1,7 @@
+# This fork is no longer maintained
+
+See https://github.com/NathanBaulch/asciichart-sharp for a maintained fork.
+
 # asciichart-sharp
 C# port of asciichart (https://github.com/kroitor/asciichart)
 
