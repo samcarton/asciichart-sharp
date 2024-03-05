@@ -7,7 +7,6 @@ namespace AsciiChart.Sharp
         int _axisLabelLeftMargin = 1;
         int _axisLabelRightMargin = 1;
 
-
         /// <summary>
         /// The margin between the axis label and the left of the output.
         /// </summary>
@@ -18,7 +17,7 @@ namespace AsciiChart.Sharp
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("Margin must be >= 0");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Margin must be >= 0");
                 }
                 _axisLabelLeftMargin = value;
             }
@@ -34,12 +33,12 @@ namespace AsciiChart.Sharp
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("Margin must be >= 0");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Margin must be >= 0");
                 }
                 _axisLabelRightMargin = value;
             }
         }
-        
+
         /// <summary>
         /// Roughly the number of lines to scale the output to.
         /// </summary>
@@ -54,5 +53,20 @@ namespace AsciiChart.Sharp
         /// The axis label format.
         /// </summary>
         public string AxisLabelFormat { get; set; } = "0.00";
+
+        /// <summary>
+        /// The axis color.
+        /// </summary>
+        public AnsiColor AxisColor { get; set; }
+
+        /// <summary>
+        /// The axis label color.
+        /// </summary>
+        public AnsiColor LabelColor { get; set; }
+
+        /// <summary>
+        /// The color of each series.
+        /// </summary>
+        public AnsiColor[] SeriesColors { get; set; }
     }
 }
